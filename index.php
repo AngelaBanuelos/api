@@ -1,17 +1,13 @@
 <?php
-
 //Configuration for our PHP Server
 set_time_limit(0);
 ini_set('default_socket_timeout', 300);
-
 session_start();
-
 //Make Constant using define.
 define('clientID', '6dea88c7c85f453eb40b4293a5040ac6');
 define('clientSecret', '117314e5478b4250a1454dc6ad726f2f');
 define('redirectURI', 'http://localhost/api/index.php');
 define('ImageDirectory', 'pics/');
-
 if (isset($_GET['code'])){
 	$code = ($_GET['code']);
 	$url = 'https://api.instagram.com/oauth/access_token';
@@ -21,8 +17,18 @@ if (isset($_GET['code'])){
 		                           'redirect_uri' => redirectURI,
 		                           'code' => $code
 		                           );
-}
+//cURL is what we use in PHP, its a library calls to other API's.
+$curl =  curl_init($url);//Setting a cURL session and we put in $url because that's where we are getting the data from.
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_POSTFIELDS, $access_token_settings);//setting the POSTFIELDS to the array setup that we created.
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); // setting it equal to 1 because we are getting strings back
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//but in live work-production we want to set this to true.
 
+
+$result = curl_exec($curl);
+curl_close($curl);
+}
+else{
 ?>
 
 <!DOCTYPE html>
@@ -36,4 +42,7 @@ if (isset($_GET['code'])){
 	<script type="js/main.js "></script>
 	
 </body>
-</html>
+</html
+<?php
+}
+?>
