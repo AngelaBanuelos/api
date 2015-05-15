@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="main.css"/>
+	<title></title>
+</head>
+<body>
+
+
 <?php
 //Configuration for our PHP Server
 set_time_limit(0);
@@ -6,13 +15,11 @@ session_start();
 //Make Constant using define.
 define('clientID', '6dea88c7c85f453eb40b4293a5040ac6');
 define('clientSecret', '117314e5478b4250a1454dc6ad726f2f');
-define('redirectURI', 'http://localhost/api/index.php');
+define('redirectURI', 'http://localhost/myapi/index.php');
 define('ImageDirectory', 'pics/');
-
 //Function that is going to connect to Instagram.
 function connectToInstagram($url){
 	$ch = curl_init();
-
 	curl_setopt_array($ch, array(
 		CURLOPT_URL => $url,
 		CURLOPT_RETURNTRANSFER => true,
@@ -23,42 +30,34 @@ function connectToInstagram($url){
 		curl_close($ch);
 		return $result;
 }
-
 //Function to get UserID cause userName doesn't allow us to get pictures!
 function getUserID($userName){
-	$url = 'http://api.instagram.com/v1/users/search?q='.$userName. '&client_id='.clientID;
+	$url = 'https://api.instagram.com/v1/users/search?q=' . $userName . '&client_id=' .clientID;
 	$instagramInfo = connectToInstagram($url);
 	$results = json_decode($instagramInfo, true);
-
 	return $results['data']['0']['id'];
 }
-
 //Function to print images onto screen
-function printImages($userID){
-	$url = 'http://api.instagram.com/v1/users/'.$userID.'/media/recent?client_id='.clientID.'&count=5';
+function printImages($userID)
+{
+	$url = 'https://api.instagram.com/v1/users/' . $userID . '/media/recent?client_id='.clientID . '&count=5';
 	$instagramInfo = connectToInstagram($url);
 	$results = json_decode($instagramInfo, true);
-	//Parse through the information one by one
-	foreach ($results['data'] as $items) {
-		$image_url = $items['images']['low_resolution']['url'];//going to go through all of my results and give myself back the URL of those pictures 
-		//because we want to have it in the PHP Server.
-		echo '<img src=" '.$image_url.'"/>br/>';
-		//calling a function to save that $image_url
-		savePictures($image_url);
-	}
+	//Parse through thet information one by one
+	foreach($results['data'] as $items)
+	 {
+	 	$image_url = $items['images']['low_resolution']['url']; //go through all of the results and give back the url of those pictures because we want to save it in the php server.
+	 	echo '<img src=" '. $image_url .' "/><br/>';
+	 }
 }
-
-//Function to save a image to server
-function savePictures($image_url){
-	echo $image_url. '<br>'; 
-	$filename = basename($image_url);// the filename is what we are storing. basename is the PHP built in method that we are using to store $image_url
-	echo $filename . '<br>';
-
-	$destination = ImageDirectory . $filename;//making sure that the image doesnt exist in the storage.
-	file_put_contents($destination, file_get_contents($image_url));//goes and grabs an imagefile and stores it into our server
+//Function to save image to server
+function savePictures($userID){
+	echo $image_url .'<br>';
+	$filename = basename($image_url); //the filename is what we are storing. basename is the PHP built that we are using to store $image_url
+	echo $filename. '<br>';
+	$destination = ImageDirectory . $filename; //making sure that the image doesn't exist in the storage.
+	file_get_contents($destination, file_get_contents($image_url)); //gets and grabs an image file and stores it into our server
 }
-
-
 if (isset($_GET['code'])){
 	$code = ($_GET['code']);
 	$url = 'https://api.instagram.com/oauth/access_token';
@@ -74,32 +73,59 @@ curl_setopt($curl, CURLOPT_POST, true);
 curl_setopt($curl, CURLOPT_POSTFIELDS, $access_token_settings);//setting the POSTFIELDS to the array setup that we created.
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); // setting it equal to 1 because we are getting strings back
 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//but in live work-production we want to set this to true.
-
-
 $result = curl_exec($curl);
 curl_close($curl);
 $results = json_decode($result, true);
 $userName =  $results['user']['username'];
-
-$userID = getUserID($username);
-
+//echo $userName;
+$userID = getUserID($userName);
+//echo $userID;
 printImages($userID);
 }
 else{
 ?>
+</body>
+</html>
 
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="login.css"/>
+
+	<link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
 	<title></title>
 </head>
 <body>
+<div class="container">
+    <div class="header">
+        <div class="clr"></div>
+    </div>
+    <div class="sp-container">
+        <div class="sp-content">
+            <div class="sp-globe"></div>
+            	<h2 class="frame-1">Welcome!</h2>
+				<h2 class="frame-2">To....</h2>
+            	<h2 class="frame-5"><span>My Instagram</span><!--  <span>Love life.</span> <span>Go vegan.</span> --></h2>
+
+<a  class="sp-circle-link"  href="https://api.instagram.com/oauth/authorize/?client_id=<?php echo clientID; ?>&redirect_uri=<?php echo redirectURI; ?>&response_type=code">Login</a>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/path/to/shared/js/EventHelpers.js">
+</script>
+<script type="text/javascript" src="/path/to/shared/js/cssQuery-p.js">
+</script>
+<script type="text/javascript" src="/path/to/shared/js/jcoglan.com/sylvester.js">
+</script>
+<script type="text/javascript" src="/path/to/shared/js/cssSandpaper.js">
+</script>
+
 	
-	<a href="https://api.instagram.com/oauth/authorize/?client_id=<?php echo clientID; ?>&redirect_uri=<?php echo redirectURI; ?>&response_type=code">Login</a>
-	<script type="js/main.js "></script>
-	
+
 </body>
-</html
+</html>
 <?php
 }
 ?>
