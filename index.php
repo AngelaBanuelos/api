@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="main.css"/>
+	<link rel="stylesheet" type="text/css" href="login.css"/>
+
+	<link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
 	<title></title>
 </head>
-<body>
-
+<div id="page">
 
 <?php
 //Configuration for our PHP Server
@@ -30,6 +31,7 @@ function connectToInstagram($url){
 		curl_close($ch);
 		return $result;
 }
+
 //Function to get UserID cause userName doesn't allow us to get pictures!
 function getUserID($userName){
 	$url = 'https://api.instagram.com/v1/users/search?q=' . $userName . '&client_id=' .clientID;
@@ -87,17 +89,9 @@ printImages($userID);
 }
 else{
 ?>
-</body>
-</html>
+</div>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<link rel="stylesheet" type="text/css" href="login.css"/>
 
-	<link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
-	<title></title>
-</head>
 <body>
 <div class="container">
     <div class="header">
